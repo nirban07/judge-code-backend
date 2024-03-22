@@ -59,12 +59,15 @@ async function checkStatus(token) {
   };
   try {
     const response = await axios.request(options);
-    if (response.data.status_id == 1 || response.data.status_id == 2) {
+    if (response.data.status_id === 1 || response.data.status_id === 2) {
+      // If status is 1 or 2, wait for 2 seconds and then check status again
       setTimeout(() => {
         checkStatus(token);
       }, 2000);
+    } else {
+      // If status is not 1 or 2, return the final response data
+      return response.data;
     }
-    return response.data;
   } catch (error) {
     console.error(error.status);
   }
@@ -76,7 +79,7 @@ app.post("/", async (req, res) => {
   const token = await createSubmissions(body);
   const answer = await checkStatus(token);
   // console.log(token);
-  // console.log(answer);
+  console.log(answer);
 
   const data = await prisma.codeSnippet.create({
     data: {
